@@ -6,7 +6,7 @@
         "description": "Enter the details of your Renson unit.",
         "data": {
           "host": "IP Address",
-          "api_key": "API Key (e.g., 1123545641)"
+          "api_key": "API Key"
         }
       }
     },
