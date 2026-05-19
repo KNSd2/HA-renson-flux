@@ -1,0 +1,21 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect to Renson Flux",
+        "description": "Enter the details of your Renson unit.",
+        "data": {
+          "host": "IP Address",
+          "api_key": "API Key (e.g., 1123545641)"
+        }
+      }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect. Check IP or Key.",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  }
+}
