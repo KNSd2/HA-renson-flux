@@ -70,8 +70,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def async_handle_set_sleep(call):
         cancel_sleep_loop()
-        speed = call.data.get("speed", 20)
-        total_timer = call.data.get("timer", 480)
+        
+        # Force these to be integers so the math doesn't crash if passed as strings
+        speed = int(call.data.get("speed", 20))
+        total_timer = int(call.data.get("timer", 480))
 
         async def sleep_loop():
             try:
@@ -83,19 +85,33 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                     payload = {"mode": "manual", "percent": speed, "timer": 120}
                     await hass.async_add_executor_job(send_ventilation_command, base_url, headers, payload)
                     _LOGGER.info(f"Sleep loop chunk {i+1}/{loops} sent: {speed}% for 120 mins")
-                    await asyncio.sleep(120 * 60) # Wait exactly 2 hours before firing the next command
+                    
+                    # Tell the dashboard to update instantly so you see it working
+                    await asyncio.sleep(3)
+                    await hass.services.async_call("homeassistant", "update_entity", {"entity_id": ["sensor.renson_active_mode", "sensor.renson_breeze_status"]}, blocking=False)
+                    
+                    # Wait 2 hours before firing the next command (minus the 3 seconds we just waited)
+                    await asyncio.sleep((120 * 60) - 3)
                     
                 # Send any remaining minutes (e.g. if you set a 300 minute timer, this handles the final 60)
                 if remainder > 0:
                     payload = {"mode": "manual", "percent": speed, "timer": remainder}
                     await hass.async_add_executor_job(send_ventilation_command, base_url, headers, payload)
-                    await asyncio.sleep(remainder * 60)
+                    
+                    # Tell dashboard to update
+                    await asyncio.sleep(3)
+                    await hass.services.async_call("homeassistant", "update_entity", {"entity_id": ["sensor.renson_active_mode", "sensor.renson_breeze_status"]}, blocking=False)
+                    
+                    await asyncio.sleep((remainder * 60) - 3)
                     
                 # Finally, revert to auto when all loops are done
                 payload = {"mode": "automatic"}
                 await hass.async_add_executor_job(send_ventilation_command, base_url, headers, payload)
                 _LOGGER.info("Sleep sequence completed. Returned to Auto.")
-                await hass.services.async_call("homeassistant", "update_entity", {"entity_id": ["sensor.renson_active_mode"]}, blocking=False)
+                
+                # Tell dashboard to update one last time
+                await asyncio.sleep(3)
+                await hass.services.async_call("homeassistant", "update_entity", {"entity_id": ["sensor.renson_active_mode", "sensor.renson_breeze_status"]}, blocking=False)
                 
             except asyncio.CancelledError:
                 # This safely catches when the user clicks 'Auto' or 'Boost' mid-sleep
