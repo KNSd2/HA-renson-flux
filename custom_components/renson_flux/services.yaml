@@ -47,3 +47,32 @@ set_minimum:
 set_auto:
   name: Reset Renson to Auto
   description: Cancels any active timers and returns the unit to automatic demand management.
+  
+  set_sleep:
+  name: Set Renson Sleep
+  description: Sets the Renson unit to a specific speed for up to 12 hours by automatically refreshing the command in the background (bypasses Renson's 120-minute limit).
+  fields:
+    speed:
+      name: Speed (%)
+      description: Fan speed percentage (e.g., 20).
+      example: 20
+      required: false
+      selector:
+        number:
+          min: 11
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+    timer:
+      name: Duration (minutes)
+      description: Total sleep duration in minutes.
+      example: 480
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 720
+          step: 1
+          unit_of_measurement: "min"
+          mode: box
