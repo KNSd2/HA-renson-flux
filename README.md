@@ -51,8 +51,46 @@ Want a clean, ready-to-use control panel for your Home Assistant dashboard? Add 
 ```yaml
 type: vertical-stack
 cards:
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - show_name: true
+        show_icon: true
+        type: button
+        name: 100% Boost (30m)
+        icon: mdi:rocket-launch
+        tap_action:
+          action: call-service
+          service: renson_flux.set_boost
+          data:
+            speed: 100
+            timer: 30
+      - type: button
+        name: Minimum (60m)
+        icon: mdi:fan-minus
+        tap_action:
+          action: call-service
+          service: renson_flux.set_minimum
+          data:
+            timer: 60
+      - type: button
+        name: Sleep (8 Hours)
+        icon: mdi:weather-night
+        tap_action:
+          action: call-service
+          service: renson_flux.set_sleep
+          data:
+            speed: 20
+            timer: 480
+      - type: button
+        name: Auto (Demand)
+        icon: mdi:robot
+        tap_action:
+          action: call-service
+          service: renson_flux.set_auto
   - type: entities
-    title: Renson Flux Dashboard
+    title: 💨 Renson Flux Dashboard
     entities:
       - entity: sensor.renson_active_mode
         name: Current Mode & Speed
@@ -64,35 +102,3 @@ cards:
         name: VOC (Odors)
       - entity: sensor.renson_humidity_level
         name: Humidity
-  - type: grid
-    columns: 2
-    square: false
-    cards:
-      - type: button
-        name: 100% Boost (30m)
-        tap_action:
-          action: call-service
-          service: renson_flux.set_boost
-          data:
-            speed: 100
-            timer: 30
-      - type: button
-        name: Minimum (60m)
-        tap_action:
-          action: call-service
-          service: renson_flux.set_minimum
-          data:
-            timer: 60
-      - type: button
-        name: Sleep (8 Hours)
-        tap_action:
-          action: call-service
-          service: renson_flux.set_boost
-          data:
-            speed: 20
-            timer: 30
-      - type: button
-        name: Auto (Demand)
-        tap_action:
-          action: call-service
-          service: renson_flux.set_auto
